@@ -2,9 +2,11 @@ package br.edu.ifsp.scl.btchatsdmkt
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
@@ -164,6 +166,74 @@ class  MainActivity : AppCompatActivity() {
             }, tempo * 1000L)
         }
     }
+
+    private fun onCancelDialog(dialogInterface: DialogInterface) {
+        // Finalizando a busca por servidores
+        adaptadorBt?.cancelDiscovery()
+
+        paraThreadsFilhas()
+    }
+
+    private fun paraThreadsFilhas() {
+        if (threadComunicacao != null) {
+            threadComunicacao?.parar()
+            threadComunicacao = null
+        }
+        if (threadCliente != null) {
+            threadCliente?.parar()
+            threadCliente = null
+        }
+        if (threadServidor != null) {
+            threadServidor?.parar()
+            threadServidor = null
+        }
+    }
+
+    override fun onDestroy() {
+        // Desregistrar o receiver
+        desregistraReceiver()
+
+        // Parar todas as threads filhas
+        paraThreadsFilhas()
+
+        super.onDestroy()
+    }
+
+    private fun iniciaThreadServidor() {
+        paraThreadsFilhas()
+        exibirAguardeDialog("Aguardando conexões", TEMPO_DESCOBERTA_SERVICO_BLUETOOTH)
+        threadServidor = ThreadServidor(this)
+        threadServidor?.iniciar()
+    }
+
+    private fun iniciaThreadCliente(i: Int) {
+        paraThreadsFilhas()
+        exibirAguardeDialog("Aguardando conexões", TEMPO_DESCOBERTA_SERVICO_BLUETOOTH)
+        threadCliente = ThreadCliente(this)
+        threadCliente?.iniciar(listaBtsEncontrados?.get(i))
+    }
+
+    fun exibirDispositivosEncontrados() {
+        aguardeDialog?.dismiss()
+        val listaNomesBtsEncontrados: MutableList<String> = mutableListOf()
+        listaBtsEncontrados?.forEach { listaNomesBtsEncontrados.add(it.name) }
+
+        val  escolhaDispositivoDialog = with(AlertDialog.Builder(this)) {
+            setTitle("Dispositivos Encontrados")
+            setSingleChoiceItems(listaNomesBtsEncontrados.toTypedArray(),-1) { dialog, which -> trataSelecaoServidor(dialog, which)}
+            create()
+        }
+        escolhaDispositivoDialog.show()
+    }
+
+    fun trataSelecaoServidor(dialog: DialogInterface, which: Int) {
+        iniciaThreadCliente(which)
+
+        adaptadorBt?.cancelDiscovery()
+
+        dialog.dismiss()
+    }
+
     private fun toast(mensagem: String) = Toast.makeText(this,mensagem,Toast.LENGTH_SHORT).show()
 
     inner class TelaPrincipalHandler: Handler() {
