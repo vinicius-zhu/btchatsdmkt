@@ -212,7 +212,7 @@ class  MainActivity : AppCompatActivity() {
 
     private fun iniciaThreadCliente(i: Int) {
         paraThreadsFilhas()
-        exibirAguardeDialog("Aguardando conexões", TEMPO_DESCOBERTA_SERVICO_BLUETOOTH)
+        exibirAguardeDialog("Aguardando conexões", TEMPO_DESCOBERTA_SERVICO_BLUETOOTH*3)
         threadCliente = ThreadCliente(this)
         threadCliente?.iniciar(listaBtsEncontrados?.get(i))
     }
@@ -220,7 +220,7 @@ class  MainActivity : AppCompatActivity() {
     fun exibirDispositivosEncontrados() {
         aguardeDialog?.dismiss()
         val listaNomesBtsEncontrados: MutableList<String> = mutableListOf()
-        listaBtsEncontrados?.forEach { listaNomesBtsEncontrados.add(it.name) }
+        listaBtsEncontrados?.forEach { listaNomesBtsEncontrados.add(if (it.name == null) "Sem Nome" else it.name ) }
 
         val  escolhaDispositivoDialog = with(AlertDialog.Builder(this)) {
             setTitle("Dispositivos Encontrados")
