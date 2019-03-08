@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothSocket
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
@@ -226,7 +227,13 @@ class  MainActivity : AppCompatActivity() {
         escolhaDispositivoDialog.show()
     }
 
-    fun trataSelecaoServidor(dialog: DialogInterface, which: Int) {
+    fun trataSocket(socket: BluetoothSocket?) {
+        aguardeDialog?.dismiss()
+        threadComunicacao = ThreadComunicacao(this)
+        threadComunicacao?.iniciar(socket)
+    }
+
+    private fun trataSelecaoServidor(dialog: DialogInterface, which: Int) {
         iniciaThreadCliente(which)
 
         adaptadorBt?.cancelDiscovery()
