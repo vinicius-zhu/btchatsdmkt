@@ -215,7 +215,7 @@ class  MainActivity : AppCompatActivity() {
 
     private fun iniciaThreadCliente(i: Int) {
         paraThreadsFilhas()
-        exibirAguardeDialog("Aguardando conexões", TEMPO_DESCOBERTA_SERVICO_BLUETOOTH*3)
+        exibirAguardeDialog("Aguardando conexões", TEMPO_DESCOBERTA_SERVICO_BLUETOOTH)
         threadCliente = ThreadCliente(this)
         threadCliente?.iniciar(listaBtsEncontrados?.get(i))
     }
