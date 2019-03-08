@@ -128,6 +128,9 @@ class  MainActivity : AppCompatActivity() {
             R.id.modoClienteMenuItem -> {
                 toast("Configurando modo cliente")
 
+                // (Re)Inicializando a Lista de dispositivos encontrados
+                listaBtsEncontrados = mutableListOf()
+
                 registraReceiver()
 
                 adaptadorBt?.startDiscovery()
