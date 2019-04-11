@@ -37,7 +37,7 @@ class ThreadCliente(val mainActivity: MainActivity) : Thread() {
 
     fun parar() {
         try {
-            socket!!.close()
+            socket?.close()
         } catch (e: IOException) {
             e.printStackTrace()
         }
